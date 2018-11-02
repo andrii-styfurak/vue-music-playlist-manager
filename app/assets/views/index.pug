@@ -1,0 +1,174 @@
+doctype html
+html(lang="ru" dir="ltr")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
+    title Playlists
+    link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet" crossorigin="anonymous")
+    link(href="https://cdn.jsdelivr.net/npm/wickedpicker@0.4.3/dist/wickedpicker.min.css" rel="stylesheet")
+    link(href="styles/libs.min.css" rel="stylesheet")
+    link(href="styles/main.css" rel="stylesheet")
+
+  body
+    #playlists-app.playlists.hidden
+      .row.no-gutters
+        .col-4
+          h4.playlists__title.text-muted Аудио
+
+          .card
+            .card-body
+              ul.list-group.list-group-flush
+                draggable(
+                  v-model="files"
+                  :options="filesSortOptions"
+                  :clone="cloneFile"
+                  )
+
+                  li.playlists__item.list-group-item(
+                    v-for="(file, index) in files"
+                    :key="index"
+                    :index="index"
+                    )
+
+                    .playlists__item-drag
+                      em.playlists__item-number.text-muted(v-text="index + 1")
+
+                      em.playlists__item-time.text-muted(v-text="file.time")
+
+                      .playlists__item-wrap
+                        .playlists__item-title(v-text="file.name")
+
+                    .controls
+                      .control.control--play(@click="playTrack(file.id, index, $event)")
+                      .control.control--delete(@click="deleteFile(file.id, index)")
+
+        .col-4
+          h4.playlists__title.text-muted(v-if="!activePlaylist.id") Плейлист
+
+          .dropdown(v-if="activePlaylist.id")
+            h4#dropdownPlaylists.playlists__title.dropdown-toggle(data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-text="activePlaylist.name")
+
+            .dropdown-menu(aria-labelledby="dropdownPlaylists" :class="{ show: !activePlaylist.id }")
+              .dropdown-item(
+                v-for="(playlist, index) in playlists"
+                @click="activePlaylist = playlist"
+                :key="index"
+                ) {{ playlist.name }}
+                .control.control--delete(@click.stop="deletePlaylist(playlist.id, index)")
+
+          .card(:class="{ 'drag-disable': !activePlaylist.id }")
+            .card-body
+              ul.list-group.list-group-flush
+                draggable(
+                  v-model="tracks"
+                  :options="tracksSortOptions"
+                  )
+
+                  li.playlists__item.list-group-item(
+                    v-for="(file, index) in tracks"
+                    :key="index"
+                    :index="index"
+                    )
+
+                    .playlists__item-drag
+                      em.playlists__item-number.text-muted(v-text="index + 1")
+
+                      em.playlists__item-time.text-muted(v-text="file.time")
+
+                      .playlists__item-wrap
+                        .playlists__item-title(v-text="file.name")
+
+                    .controls
+                      .control.control--play(@click="playTrack(file.id, index, $event)")
+                      .control.control--delete(@click="deleteTrack('tracks', index)")
+
+        .col-4
+          h4.playlists__title.text-muted Объявления
+
+          .card(:class="{ 'drag-disable': !activePlaylist.id }")
+            .card-body
+              ul.list-group.list-group-flush
+                draggable(
+                  v-model="notifications"
+                  :options="notificationsSortOptions"
+                  )
+
+                  li.playlists__item.list-group-item(
+                    v-for="(file, index) in notifications"
+                    :key="index"
+                    :index="index"
+                    )
+
+                    .playlists__item-drag
+                      em.playlists__item-number.text-muted(v-text="index + 1")
+
+                      em.playlists__item-time.text-muted(v-text="file.time")
+
+                      .playlists__item-wrap
+                        .playlists__item-title(v-text="file.name")
+
+                    .date-picker__wrap
+                      vue-timepicker(format="HH:mm" :minute-interval="5" v-model="file.startObj")
+
+                    .controls
+                      .control.control--play(@click="playTrack(file.id, index, $event)")
+                      .control.control--delete(@click="deleteTrack('notifications', index)")
+
+        .bottom-panel
+          .row.no-gutters
+            .col-4.bottom-panel__row(v-if="!newFile.progress")
+              label.file-input
+                input(type="file" @change="fileChange")
+
+              form.form(@submit.prevent="uploadFile")
+                input.form-control(
+                  type="text"
+                  placeholder="Имя файла"
+                  :value="newFile.name"
+                  @input="$set(newFile, 'name', $event.target.value)"
+                  :disabled="!newFile.name"
+                  )
+
+                button.btn.btn-primary(type="submit" :disabled="!newFile.name") Загрузить
+
+            .col-4.bottom-panel__row(v-if="newFile.progress")
+              .progress
+                .progress-bar(role="progressbar" v-bind:style="{ width: newFile.progress + '%' }")
+
+            .col-4.bottom-panel__row
+              form.form(@submit.prevent="createPlaylist")
+                input.form-control(
+                  type="text"
+                  placeholder="Название плейлиста"
+                  :value="newPlaylist.name"
+                  @input="$set(newPlaylist, 'name', $event.target.value)"
+                  @keydown="newPlaylist.error = false"
+                  :class="{ 'is-invalid': newPlaylist.error }"
+                  )
+
+                button.btn.btn-primary(type="submit" :disabled="newPlaylist.wait") Добавить
+
+            .col-4.bottom-panel__row
+              #audio-play
+
+    script(type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+
+    script(type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous")
+
+    script(type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous")
+
+    script(type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
+
+    script(type="text/javascript" src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js")
+
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.15.0/vuedraggable.min.js")
+
+    script(type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.5.2/qs.min.js")
+
+    script(type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js")
+
+    script(type="text/javascript" src="scripts/libs.min.js")
+
+    script(type="text/javascript" src="https://cdn.jsdelivr.net/npm/wickedpicker@0.4.3/dist/wickedpicker.min.js")
+
+    script(type="text/javascript" src="scripts/app.js")

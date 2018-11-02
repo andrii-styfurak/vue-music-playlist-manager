@@ -1,0 +1,37 @@
+script(type="text/x-template" id="list-files")
+  ul.list-group.list-group-flush
+    draggable(v-model="files" :options="sortOptions" :clone="clone")
+      li.playlists__item.list-group-item(v-for="(file, index) in files" :key="index" :index="index")
+        .playlists__item-drag
+          em.playlists__item-number.text-muted(v-text="index + 1")
+
+          em.playlists__item-time.text-muted(v-text="file.time")
+
+          .playlists__item-wrap
+            .playlists__item-title(v-text="file.name")
+
+        .controls
+          .control.control--play(@click="play(index)")
+          .control.control--remove(@click="remove(index)")
+
+
+script(type="text/x-template" id="list-notifications")
+  ul.list-group.list-group-flush
+    draggable(v-model="notifications" :options="sortOptions")
+      li.playlists__item.list-group-item(v-for="(file, index) in notifications" :key="index" :index="index")
+        .playlists__item-drag
+          em.playlists__item-number.text-muted(v-text="index + 1")
+
+          em.playlists__item-time.text-muted(v-text="file.time")
+
+          .playlists__item-wrap
+            .playlists__item-title(v-text="file.name")
+
+        .date-picker__wrap
+          .form-group
+            .input-group
+              input.date-picker(type="text" class="form-control" v-model="file.start")
+
+        .controls
+          .control.control--play(@click="play(index)")
+          .control.control--remove(@click="remove(index)")

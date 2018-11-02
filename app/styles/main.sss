@@ -1,0 +1,240 @@
+.playlists
+  padding: 15px calc(15px + 10px)
+  background: #f3f3f7
+  height: 100vh
+
+  &__title
+    height: 45px
+    margin: 0
+    cursor: default
+    display: inline-block
+    position: relative
+
+  .row
+    height: 100%
+
+    [class^='col-']
+      padding: * 10px
+
+  .dropdown-menu
+    max-height: calc(100vh - 30px - 45px - 30px - 15px)
+    overflow: auto
+
+  .dropdown-item
+    padding: .25rem .9rem .25rem 1.5rem
+
+    .control
+      margin-left: .3rem
+
+  .card
+    overflow: auto
+    position: relative
+    height: calc(100vh - 30px - 45px - 30px - 15px)
+
+    &:not(.drag-disable) .list-group > div
+      height: calc(100vh - 30px - 45px - 30px - 15px - 2px)
+
+    &.drag-disable
+      background-color: #fbfbfb
+
+    &-body
+      padding: 0
+
+    &-footer
+      position: fixed null 0 0 0
+
+  &__item
+    box: space-between
+    padding: 0
+    user-select: none
+    border: 0
+    margin-bottom: 0
+
+    &--top
+      z-index: 3 !important
+
+    &[style="display: none;"]:first-child + &
+      border-top: 0
+
+    & + &
+      border-top: 1px solid rgba(0, 0, 0, .125)
+
+    &.sortable-chosen
+      background: #007bff !important
+      text: #fff !important
+      z-index: 3 !important
+
+      ^&-wrap
+        &:after
+          display: none
+
+      .text-muted, .playlists__item-title
+        text: #fff !important
+
+    &:hover
+      background: #fbfbfc
+      z-index: 2
+
+      ^&-title
+        transform: translateX(-100%)
+        transition: transform 13s linear 1s
+
+      ^&-wrap
+        &:after
+          background: linear-gradient(90deg, rgba(2,0,36,0) 0%, rgba(9,9,121,0) 23%, rgba(251,251,252,1) 65%)
+
+    &-drag
+      box:
+      width: 100%
+      padding: 0.65rem .5rem 0.65rem 0
+      cursor: -webkit-grab
+
+    &-number
+      width: 34px
+      padding-left: .5rem
+      text: right
+      white-space: nowrap
+
+    &-time
+      padding: 0 10px
+
+    &-title
+      white-space: nowrap
+      position: absolute
+      transition: transform 0 linear 0
+      overflow: hidden
+
+    &-wrap
+      width: 100%
+      position: relative
+      overflow: hidden
+      padding: * 0 !important
+
+      &:after
+        content: ''
+        position: absolute 0 -1px 0 null
+        width: 20px
+        background: linear-gradient(90deg, rgba(2,0,36,0) 0%, rgba(9,9,121,0) 23%, rgba(255,255,255,1) 65%)
+
+  .form
+    box:
+    width: 100%
+
+  .controls
+    box: bottom
+    margin-right: .5rem
+
+  .control
+    size: 34px 100%
+    min-height: 24px
+    cursor: pointer
+    background-repeat: no-repeat
+    background-position: center
+    border-radius: 3px
+
+    & + &
+      margin-left: 0.3rem
+
+    &--play
+      background-image: svg-load("icons/play.svg" fill: #d2d5d7)
+      background-size: 24px
+
+      &:hover, &.active
+        background-image: svg-load("icons/play.svg" fill: #007bff)
+
+    &--pause
+      background-image: svg-load("icons/pause.svg" fill: #d2d5d7)
+      background-size: 24px
+
+      &:hover
+        background-image: svg-load("icons/pause.svg" fill: #007bff)
+
+    &--delete
+      background-image: svg-load("icons/remove.svg" fill: #d2d5d7)
+      background-size: 18px
+
+      &:hover
+        background-image: svg-load("icons/remove.svg" fill: #F44336)
+
+    &--clock
+      background-image: svg-load("icons/clock.svg" fill: #d2d5d7)
+      background-size: 19px
+
+      &:hover
+        background-image: svg-load("icons/clock.svg" fill: #007bff)
+
+  .dropdown
+
+    .playlists__title
+      cursor: pointer
+
+    &-menu
+      margin: 0
+
+    &-item
+      cursor: pointer
+      box: center space-between
+
+    &-toggle::after
+      margin-left: 0.355em
+      vertical-align: 0.155em
+
+  .form-group
+    margin: 0
+
+  .date-picker
+
+    &__wrap
+      box: center
+      margin-right: 8px
+
+      .form-control
+        margin-right: 5px
+        height: 26px
+        padding: 0 0.45rem
+        width: 54px
+
+  .bottom-panel
+    position: fixed null 0 0 0
+    padding: 15px 25px
+
+    &__row
+      box:
+      position: relative
+
+    .form-control
+      height: 30px
+
+    .btn
+      padding: 0.075rem *
+      margin-left: 10px
+
+    .progress
+      position: absolute 0 10px 0 10px
+      margin: auto
+      height: 15px
+
+  .file-input
+    size: 30px
+    min-width: 30px
+    background-color: #007bff
+    background-image: svg-load("icons/add.svg" fill: #fff)
+    background-position: center
+    background-repeat: no-repeat
+    background-size: 24px
+    cursor: pointer
+    margin: 0
+    border-radius: 3px
+    margin-right: 10px
+
+    input
+      display: none
+
+  #audio-play
+    size: 100% 30px
+
+    audio
+      size: 100% 42px
+
+.hidden
+  visibility: hidden
